@@ -120,7 +120,7 @@ app.get("/api/colors", authenticator, (req, res) => {
   res.send(colors);
 });
 
-app.post("/api/colors", authenticator, (req, res) => {
+app.post("/api/colors", authenticator, (req, res) => { // this makes a new color
   if (req.body.color !== undefined && req.body.code !== undefined) {
     const newcolor = req.body;
     newcolor.id = nextId;
@@ -130,7 +130,7 @@ app.post("/api/colors", authenticator, (req, res) => {
   res.status(201).json(colors);
 });
 
-app.put("/api/colors/:id", authenticator, (req, res) => {
+app.put("/api/colors/:id", authenticator, (req, res) => { // this may be the one to edit colors...
   if (!req.params.id)
     res.status(400).send("Your request is missing the color id");
   if (req.body.id === undefined || !req.body.color || !req.body.code) {

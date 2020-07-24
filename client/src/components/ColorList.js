@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import axiosWithAuth from "../utils/axiosWithAuth";
 
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors }) => {
-  console.log(colors);
+const ColorList = ({ colors, updateColors, fetchColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
@@ -16,15 +16,50 @@ const ColorList = ({ colors, updateColors }) => {
     setColorToEdit(color);
   };
 
+  // const addColor = e => {
+  //   e.preventDefault();
+
+  //   const newID = colors[colors.length-1].id+1
+  //   setColorToEdit({
+  //     ...colorToEdit,
+  //     id: newID
+  //   })
+  //   axiosWithAuth().post('/api/colors', colorToEdit)
+  //     .then(res => {
+  //       setEditing(false)
+  //       updateColors(res.data)
+  //       console.log(res)
+  //     })
+  //     .catch(err => console.log(err))
+  // };
+
   const saveEdit = e => {
     e.preventDefault();
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth().put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        setEditing(false)
+        let newColors = colors.map(color => {
+          if (color.id === colorToEdit.id) {
+            return colorToEdit
+          }
+          return color
+        })
+        updateColors(newColors)
+        // updateColors(res.data)
+        // deleteColor(colorToEdit)
+        console.log(res)
+      })
+      .catch(err => console.log(err))
   };
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    axiosWithAuth().delete(`/api/colors/${color.id}`)
+      .then(res => fetchColors())
+      .catch(err => console.error(err))
   };
 
   return (
@@ -76,6 +111,7 @@ const ColorList = ({ colors, updateColors }) => {
           </label>
           <div className="button-row">
             <button type="submit">save</button>
+            {/* <button onChange={addColor}>add as new color</button> */}
             <button onClick={() => setEditing(false)}>cancel</button>
           </div>
         </form>
